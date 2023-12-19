@@ -75,7 +75,7 @@ jobs:
 
             - name: Comment Changes
               uses: marocchino/sticky-pull-request-comment@v2
-              if: ${{ steps.compare.outcome == 'failure' }}
+              if: ${{ failure() }}
               with:
                 header: DevPod Binary Changes
                 message: |
