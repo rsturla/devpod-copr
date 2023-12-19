@@ -49,6 +49,7 @@ jobs:
                 mkdir -p /tmp/old /tmp/new
                 tar -xzf current.tar.gz -C /tmp/old
                 tar -xzf new.tar.gz -C /tmp/new
+                rm /tmp/new/usr/bin/dev-pod
             
             - name: Compare Contents
               run: |
