@@ -33,3 +33,29 @@ jobs:
                 VERSION=$(grep -oP '(?<=Version: ).*' devpod.spec | tr -d '[:space:]')
                 echo "Version: $VERSION"
                 echo "PR_VERSION=$VERSION" >> $GITHUB_ENV
+
+            - name: Download Versions
+              env:
+                CURRENT_VERSION: ${{ env.CURRENT_VERSION }}
+                PR_VERSION: ${{ env.PR_VERSION }}
+              run: |
+                # Download the release artifact from loft-sh/devpod releases
+                curl -Lo current.tar.gz https://github.com/loft-sh/devpod/releases/download/$CURRENT_VERSION/DevPod_linux_x86_64.tar.gz
+                curl -Lo new.tar.gz https://github.com/loft-sh/devpod/releases/download/$PR_VERSION/DevPod_linux_x86_64.tar.gz
+
+            - name: Extract Versions
+              run: |
+                # Extract the downloaded artifacts to /tmp/(old|new)
+                tar -xzf current.tar.gz -C /tmp/old
+                tar -xzf new.tar.gz -C /tmp/new
+            
+            - name: Compare Contents
+              run: |
+                # Check if files have been added or removed.  Do not check for changes to file contents, just the presence of files.
+                # Store added files in ADDED_FILES, removed files in REMOVED_FILES
+                ADDED_FILES=$(diff -rq /tmp/old /tmp/new | grep -E '^Only in /tmp/new' | sed -E 's/^Only in \/tmp\/new\/(.+): (.+)$/\2/')
+                REMOVED_FILES=$(diff -rq /tmp/old /tmp/new | grep -E '^Only in /tmp/old' | sed -E 's/^Only in \/tmp\/old\/(.+): (.+)$/\2/')
+                echo "ADDED_FILES=$ADDED_FILES" >> $GITHUB_ENV
+                echo "REMOVED_FILES=$REMOVED_FILES" >> $GITHUB_ENV
+                echo "ADDED_FILES=$ADDED_FILES"
+                echo "REMOVED_FILES=$REMOVED_FILES"
