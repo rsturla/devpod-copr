@@ -59,9 +59,8 @@ jobs:
               run: |
                 # Check if files have been added or removed.  Do not check for changes to file contents, just the presence of files.
                 # Store added files in ADDED_FILES, removed files in REMOVED_FILES
-                DIFF_RESULT=$(diff -rq /tmp/old /tmp/new)
-                ADDED_FILES=$(echo "$DIFF_RESULT" | awk '/^Only in \/tmp\/new/ {print $4}')
-                REMOVED_FILES=$(echo "$DIFF_RESULT" | awk '/^Only in \/tmp\/old/ {print $4}')
+                ADDED_FILES=$(diff -rq /tmp/old /tmp/new | grep -E '^Only in /tmp/new' | sed -E 's/^Only in \/tmp\/new\/(.+): (.+)$/\2/')
+                REMOVED_FILES=$(diff -rq /tmp/old /tmp/new | grep -E '^Only in /tmp/old' | sed -E 's/^Only in \/tmp\/old\/(.+): (.+)$/\2/')
                 echo "ADDED_FILES=$ADDED_FILES"
                 echo "REMOVED_FILES=$REMOVED_FILES"
                 echo "ADDED_FILES=$ADDED_FILES" >> $GITHUB_ENV
