@@ -53,6 +53,7 @@ jobs:
                 tar -xzf current.tar.gz -C /tmp/old
                 tar -xzf new.tar.gz -C /tmp/new
                 rm /tmp/new/usr/bin/dev-pod
+                touch /tmp/new/test
             
             - name: Compare Contents
               id: compare
