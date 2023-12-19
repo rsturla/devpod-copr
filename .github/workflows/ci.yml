@@ -9,8 +9,23 @@ on:
 jobs:
     compare:
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
         steps:
             - name: Checkout Original Branch
+              uses: actions/checkout@v4
+              with:
+                ref: ${{ github.event.pull_request.base.sha }}
+
+            - name: Extract Version from Spec
+              run: |
+                # Read contents of devpod.spec and extract version.
+                VERSION=$(grep -oP '(?<=Version: ).*' devpod.spec | tr -d '[:space:]')
+                echo "Version: $VERSION"
+                echo "CURRENT_VERSION=$VERSION" >> $GITHUB_ENV
+            
+            - name: Checkout PR Branch
               uses: actions/checkout@v4
               with:
                 ref: ${{ github.event.pull_request.head.sha }}
@@ -18,19 +33,50 @@ jobs:
             - name: Extract Version from Spec
               run: |
                 # Read contents of devpod.spec and extract version
-                VERSION=$(grep -oP '(?<=Version: ).*' devpod.spec)
-                echo "Version: $VERSION"
-                echo "CURRENT_VERSION=$VERSION" >> $GITHUB_ENV
-            
-            - name: Checkout PR Branch
-              uses: actions/checkout@v4
-              with:
-                ref: ${{ github.event.pull_request.base.sha }}
-
-            - name: Extract Version from Spec
-              run: |
-                # Read contents of devpod.spec and extract version
-                VERSION=$(grep -oP '(?<=Version: ).*' devpod.spec)
+                VERSION=$(grep -oP '(?<=Version: ).*' devpod.spec | tr -d '[:space:]')
                 echo "Version: $VERSION"
                 echo "PR_VERSION=$VERSION" >> $GITHUB_ENV
-                
+
+            - name: Download Versions
+              env:
+                CURRENT_VERSION: ${{ env.CURRENT_VERSION }}
+                PR_VERSION: ${{ env.PR_VERSION }}
+              run: |
+                # Download the release artifact from loft-sh/devpod releases
+                curl -Lo current.tar.gz https://github.com/loft-sh/devpod/releases/download/$CURRENT_VERSION/DevPod_linux_x86_64.tar.gz
+                curl -Lo new.tar.gz https://github.com/loft-sh/devpod/releases/download/$PR_VERSION/DevPod_linux_x86_64.tar.gz
+
+            - name: Extract Versions
+              run: |
+                # Extract the downloaded artifacts to /tmp/(old|new)
+                mkdir -p /tmp/old /tmp/new
+                tar -xzf current.tar.gz -C /tmp/old
+                tar -xzf new.tar.gz -C /tmp/new
+                rm /tmp/new/usr/bin/dev-pod
+                touch /tmp/new/test
+            
+            - name: Compare Contents
+              id: compare
+              run: |
+                # Check if files have been added or removed.  Do not check for changes to file contents, just the presence of files.
+                # Store added files in ADDED_FILES, removed files in REMOVED_FILES
+                files_old=$(find /tmp/old -type f | sort)
+                files_new=$(find /tmp/new -type f | sort)
+                added_files=$(comm -23 <(echo "$files_new") <(echo "$files_old"))
+                removed_files=$(comm -13 <(echo "$files_new") <(echo "$files_old"))
+                echo "Added Files: $added_files"
+                echo "Removed Files: $removed_files"
+                echo "ADDED_FILES=$added_files" >> $GITHUB_ENV
+                echo "REMOVED_FILES=$removed_files" >> $GITHUB_ENV
+
+            - name: Comment Changes
+              uses: marocchino/sticky-pull-request-comment@v2
+              if: ${{ failure() }}
+              with:
+                header: DevPod Binary Changes
+                message: |
+                  The following files have been added or removed from the DevPod binary:
+                  - Added: ${{ env.ADDED_FILES }}
+                  - Removed: ${{ env.REMOVED_FILES }}
+
+                  Please check if these changes are intended before merging this PR.
