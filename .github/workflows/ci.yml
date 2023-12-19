@@ -46,6 +46,7 @@ jobs:
             - name: Extract Versions
               run: |
                 # Extract the downloaded artifacts to /tmp/(old|new)
+                mkdir -p /tmp/old /tmp/new
                 tar -xzf current.tar.gz -C /tmp/old
                 tar -xzf new.tar.gz -C /tmp/new
             
