@@ -67,21 +67,13 @@ jobs:
                 echo "REMOVED_FILES=$REMOVED_FILES" >> $GITHUB_ENV
 
             - name: Comment Changes
-              uses: actions/github-script@v4
+              uses: marocchino/sticky-pull-request-comment@v2
               if: ${{ env.ADDED_FILES != '' || env.REMOVED_FILES != '' }}
               with:
-                github-token: ${{ secrets.GITHUB_TOKEN }}
-                script: |
-                  const { ADDED_FILES, REMOVED_FILES } = process.env;
-                  const body = `## Changes in this PR
-                  ${ADDED_FILES != '' ? `### Added Files
-                  ${ADDED_FILES.split('\n').map(file => `- ${file}`).join('\n')}` : ''}
-                  ${REMOVED_FILES != '' ? `### Removed Files
-                  ${REMOVED_FILES.split('\n').map(file => `- ${file}`).join('\n')}` : ''}
-                  `;
-                  github.issues.createComment({
-                    issue_number: context.issue.number,
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    body
-                  })
+                header: DevPod Binary Changes
+                message: |
+                  The following files have been added or removed from the DevPod binary:
+                  - Added: ${{ env.ADDED_FILES }}
+                  - Removed: ${{ env.REMOVED_FILES }}
+
+                  Please check if these changes are intended before merging this PR.
