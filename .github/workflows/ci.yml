@@ -9,6 +9,9 @@ on:
 jobs:
     compare:
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
         steps:
             - name: Checkout Original Branch
               uses: actions/checkout@v4
@@ -55,9 +58,30 @@ jobs:
               run: |
                 # Check if files have been added or removed.  Do not check for changes to file contents, just the presence of files.
                 # Store added files in ADDED_FILES, removed files in REMOVED_FILES
-                ADDED_FILES=$(diff -rq /tmp/old /tmp/new | grep -E '^Only in /tmp/new' | sed -E 's/^Only in \/tmp\/new\/(.+): (.+)$/\2/')
-                REMOVED_FILES=$(diff -rq /tmp/old /tmp/new | grep -E '^Only in /tmp/old' | sed -E 's/^Only in \/tmp\/old\/(.+): (.+)$/\2/')
-                echo "ADDED_FILES=$ADDED_FILES" >> $GITHUB_ENV
-                echo "REMOVED_FILES=$REMOVED_FILES" >> $GITHUB_ENV
+                DIFF_RESULT=$(diff -rq /tmp/old /tmp/new)
+                ADDED_FILES=$(echo "$DIFF_RESULT" | awk '/^Only in \/tmp\/new/ {print $4}')
+                REMOVED_FILES=$(echo "$DIFF_RESULT" | awk '/^Only in \/tmp\/old/ {print $4}')
                 echo "ADDED_FILES=$ADDED_FILES"
                 echo "REMOVED_FILES=$REMOVED_FILES"
+                echo "ADDED_FILES=$ADDED_FILES" >> $GITHUB_ENV
+                echo "REMOVED_FILES=$REMOVED_FILES" >> $GITHUB_ENV
+
+            - name: Comment Changes
+              uses: actions/github-script@v4
+              if: ${{ env.ADDED_FILES != '' || env.REMOVED_FILES != '' }}
+              with:
+                github-token: ${{ secrets.GITHUB_TOKEN }}
+                script: |
+                  const { ADDED_FILES, REMOVED_FILES } = process.env;
+                  const body = `## Changes in this PR
+                  ${ADDED_FILES != '' ? `### Added Files
+                  ${ADDED_FILES.split('\n').map(file => `- ${file}`).join('\n')}` : ''}
+                  ${REMOVED_FILES != '' ? `### Removed Files
+                  ${REMOVED_FILES.split('\n').map(file => `- ${file}`).join('\n')}` : ''}
+                  `;
+                  github.issues.createComment({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    body
+                  })
