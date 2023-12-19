@@ -30,7 +30,6 @@ jobs:
             - name: Extract Version from Spec
               run: |
                 # Read contents of devpod.spec and extract version
-                VERSION=$(grep -oP '(?<=Version: ).*' devpod.spec)
+                VERSION=$(grep -oP '(?<=Version: ).*' devpod.spec | tr -d '[:space:]')
                 echo "Version: $VERSION"
                 echo "PR_VERSION=$VERSION" >> $GITHUB_ENV
-                
