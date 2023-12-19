@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "config:recommended",
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["devpod.spec$"],
+      "matchStrings": [
+        "#\\s?renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s*Version:\\s*v(?<currentValue>.*)\\s"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    }
+  ]
+}
