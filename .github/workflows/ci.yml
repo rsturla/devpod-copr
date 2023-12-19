@@ -62,8 +62,8 @@ jobs:
                 # Store added files in ADDED_FILES, removed files in REMOVED_FILES
                 files_old=$(find /tmp/old -type f | sort)
                 files_new=$(find /tmp/new -type f | sort)
-                added_files=$(comm -23 <(echo "$files_new" | tr ' ' '\n' | sort) <(echo "$files_old" | tr ' ' '\n' | sort))
-                removed_files=$(comm -13 <(echo "$files_new" | tr ' ' '\n' | sort) <(echo "$files_old" | tr ' ' '\n' | sort))
+                added_files=$(comm -23 <(echo "$files_new") <(echo "$files_old"))
+                removed_files=$(comm -13 <(echo "$files_new") <(echo "$files_old"))
                 echo "Added Files: $added_files"
                 echo "Removed Files: $removed_files"
                 echo "ADDED_FILES=$added_files" >> $GITHUB_ENV
