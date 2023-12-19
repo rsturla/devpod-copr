@@ -55,6 +55,7 @@ jobs:
                 rm /tmp/new/usr/bin/dev-pod
             
             - name: Compare Contents
+              id: compare
               run: |
                 # Check if files have been added or removed.  Do not check for changes to file contents, just the presence of files.
                 # Store added files in ADDED_FILES, removed files in REMOVED_FILES
@@ -65,10 +66,16 @@ jobs:
                 echo "REMOVED_FILES=$REMOVED_FILES"
                 echo "ADDED_FILES=$ADDED_FILES" >> $GITHUB_ENV
                 echo "REMOVED_FILES=$REMOVED_FILES" >> $GITHUB_ENV
+                # If there are no changes, exit with 0, otherwise exit with 1
+                if [[ -z "$ADDED_FILES" && -z "$REMOVED_FILES" ]]; then
+                  exit 0
+                else
+                  exit 1
+                fi
 
             - name: Comment Changes
               uses: marocchino/sticky-pull-request-comment@v2
-              if: ${{ env.ADDED_FILES != '' || env.REMOVED_FILES != '' }}
+              if: ${{ steps.compare.outcome == 'failure' }}
               with:
                 header: DevPod Binary Changes
                 message: |
