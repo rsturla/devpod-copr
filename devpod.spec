@@ -1,5 +1,5 @@
 Name:           devpod
-# renovate: datasource=github-releases depName=loft-sh/devpod extractVersion=^v(?<version>.*)
+# renovate: datasource=github-releases depName=loft-sh/devpod
 Version:        v0.4.0
 Release:        1%{?dist}
 Summary:        Codespaces but open-source, client-only and unopinionated.
