@@ -1,0 +1,36 @@
+name: CI
+
+on:
+    pull_request:
+    push:
+        branches:
+            - main
+
+jobs:
+    compare:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Original Branch
+              uses: actions/checkout@v4
+              with:
+                ref: ${{ github.event.pull_request.head.sha }}
+
+            - name: Extract Version from Spec
+              run: |
+                # Read contents of devpod.spec and extract version
+                VERSION=$(grep -oP '(?<=Version: ).*' devpod.spec)
+                echo "Version: $VERSION"
+                echo "CURRENT_VERSION=$VERSION" >> $GITHUB_ENV
+            
+            - name: Checkout PR Branch
+              uses: actions/checkout@v4
+              with:
+                ref: ${{ github.event.pull_request.base.sha }}
+
+            - name: Extract Version from Spec
+              run: |
+                # Read contents of devpod.spec and extract version
+                VERSION=$(grep -oP '(?<=Version: ).*' devpod.spec)
+                echo "Version: $VERSION"
+                echo "PR_VERSION=$VERSION" >> $GITHUB_ENV
+                
