@@ -60,18 +60,14 @@ jobs:
               run: |
                 # Check if files have been added or removed.  Do not check for changes to file contents, just the presence of files.
                 # Store added files in ADDED_FILES, removed files in REMOVED_FILES
-                ADDED_FILES=$(diff -rq /tmp/old /tmp/new | grep -E '^Only in /tmp/new' | sed -E 's/^Only in \/tmp\/new\/[^:]+: (.+)$/\1/')
-                REMOVED_FILES=$(diff -rq /tmp/old /tmp/new | grep -E '^Only in /tmp/old' | sed -E 's/^Only in \/tmp\/old\/(.+): (.+)$/\2/')
-                echo "ADDED_FILES=$ADDED_FILES"
-                echo "REMOVED_FILES=$REMOVED_FILES"
-                echo "ADDED_FILES=$ADDED_FILES" >> $GITHUB_ENV
-                echo "REMOVED_FILES=$REMOVED_FILES" >> $GITHUB_ENV
-                # If there are no changes, exit with 0, otherwise exit with 1
-                if [[ -z "$ADDED_FILES" && -z "$REMOVED_FILES" ]]; then
-                  exit 0
-                else
-                  exit 1
-                fi
+                files_old=$(find /tmp/old -type f | sort)
+                files_new=$(find /tmp/new -type f | sort)
+                added_files=$(comm -23 <(echo "$files_new" | tr ' ' '\n' | sort) <(echo "$files_old" | tr ' ' '\n' | sort))
+                removed_files=$(comm -13 <(echo "$files_new" | tr ' ' '\n' | sort) <(echo "$files_old" | tr ' ' '\n' | sort))
+                echo "Added Files: $added_files"
+                echo "Removed Files: $removed_files"
+                echo "ADDED_FILES=$added_files" >> $GITHUB_ENV
+                echo "REMOVED_FILES=$removed_files" >> $GITHUB_ENV
 
             - name: Comment Changes
               uses: marocchino/sticky-pull-request-comment@v2
