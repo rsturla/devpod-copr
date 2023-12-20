@@ -22,7 +22,9 @@
       "matchStrings": [
         "#\\s?renovate: datasource=(?<datasource>.*?) depNameTemplate=(?<depNameTemplate>.*?) packageNameTemplate=(?<packageNameTemplate>.*?) currentValueTemplate=(?<currentValueTemplate>.*?)?\\s*Version:\\s*(?<currentValue>.*)\\s"
       ],
-      "depNameTemplate": "{{{depNameTemplate}}}"
+      "depNameTemplate": "{{{depNameTemplate}}}",
+      "currentValueTemplate": "{{{currentValueTemplate}}}",
+      "packageNameTemplate": "{{{packageNameTemplate}}}"
     }
     // {
     //   "customType": "regex",
