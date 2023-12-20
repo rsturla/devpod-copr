@@ -20,12 +20,21 @@
         ".*\\.spec"
       ],
       "matchStrings": [
-        "Version:\\s*(?<currentDigest>.*)\\s"
-      ],
-      "currentValueTemplate": "master",
-      "datasourceTemplate": "git-refs",
-      "depNameTemplate": "oae/gnome-shell-pano",
-      "packageNameTemplate": "https://github.com/oae/gnome-shell-pano"
+        "#\\s?renovate: datasource=(?<datasource>.*?) depNameTemplate=(?<depNameTemplate>.*?) packageNameTemplate=(?<packageNameTemplate>.*?) currentValueTemplate=(?<currentValueTemplate>.*?)?\\s*Version:\\s*(?<currentValue>.*)\\s"
+      ]
     }
+    // {
+    //   "customType": "regex",
+    //   "fileMatch": [
+    //     ".*\\.spec"
+    //   ],
+    //   "matchStrings": [
+    //     "Version:\\s*(?<currentDigest>.*)\\s"
+    //   ],
+    //   "currentValueTemplate": "master",
+    //   "datasourceTemplate": "git-refs",
+    //   "depNameTemplate": "oae/gnome-shell-pano",
+    //   "packageNameTemplate": "https://github.com/oae/gnome-shell-pano"
+    // }
   ]
 }
