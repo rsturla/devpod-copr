@@ -25,7 +25,7 @@
       "depNameTemplate": "{{{depNameTemplate}}}",
       "currentValueTemplate": "{{{currentValueTemplate}}}",
       "packageNameTemplate": "{{{packageNameTemplate}}}",
-      "versioning": "loose"
+      "versioningTemplate": "loose"
     }
     // {
     //   "customType": "regex",
