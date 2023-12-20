@@ -20,9 +20,10 @@
         ".*\\.spec"
       ],
       "matchStrings": [
-        "#\\s?renovate: datasource=(?<datasource>.*?) depNameTemplate=(?<depNameTemplate>.*?) packageName=(?<packageNameTemplate>.*?)( versioning=(?<versioning>.*?))( packageVersionTemplate=(?<currentValueTemplate>.*?))?( extractVersion=(?<extractVersion>.*?))?\\s*Version:\\s*(?<currentValue>.*)\\s"
+        "Version:\\s*(?<currentDigest>.*)\\s"
       ],
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+      "currentValueTemplate": "master",
+      "datasourceTemplate": "git-refs"
     }
   ]
 }
