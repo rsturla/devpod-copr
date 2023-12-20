@@ -23,7 +23,9 @@
         "Version:\\s*(?<currentDigest>.*)\\s"
       ],
       "currentValueTemplate": "master",
-      "datasourceTemplate": "git-refs"
+      "datasourceTemplate": "git-refs",
+      "depNameTemplate": "oae/gnome-shell-pano",
+      "packageNameTemplate": "https://github.com/oae/gnome-shell-pano"
     }
   ]
 }
