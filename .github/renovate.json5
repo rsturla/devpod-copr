@@ -10,8 +10,8 @@
         ".*\\.spec"
       ],
       "matchStrings": [
-        "#\\s?renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?) ( versioning=(?<versioning>.*?))?( extractVersion=(?<extractVersion>.*?))?\\s*Version:\\s*(?<currentValue>.*)\\s",
-        "#\\s?renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?) packageName=(?<packageNameTemplate>.*?) ( versioning=(?<versioning>.*?)( currentValueTemplate=(?<currentValueTemplate>.*?)))?\\s*Version:\\s*(?<currentDigest>.*?)\\s"
+        "#\\s?renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?) ( versioning=(?<versioning>.*?))?( extractVersion=(?<extractVersion>.*?))?\\s*Version:\\s*(?<currentValue>.*)\\s"
+        // "#\\s?renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?) packageName=(?<packageNameTemplate>.*?) ( versioning=(?<versioning>.*?)( currentValueTemplate=(?<currentValueTemplate>.*?)))?\\s*Version:\\s*(?<currentDigest>.*?)\\s"
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
     }
