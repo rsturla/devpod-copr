@@ -20,7 +20,7 @@
         ".*\\.spec"
       ],
       "matchStrings": [
-        "#\\s?renovate: datasource=(?<datasource>.*?) depNameTemplate=(?<depNameTemplate>.*?) packageNameTemplate=(?<packageNameTemplate>.*?) currentValueTemplate=(?<currentValueTemplate>.*?)?\\s*Version:\\s*(?<currentDigest>.*)\\s"
+        "#\\s?renovate: datasource=(?<datasource>.*?) depName=(?<depNameTemplate>.*?) packageName=(?<packageNameTemplate>.*?) branch=(?<currentValueTemplate>.*?)?\\s*Version:\\s*(?<currentDigest>.*)\\s"
       ],
       "depNameTemplate": "{{{depNameTemplate}}}",
       "currentValueTemplate": "{{{currentValueTemplate}}}",
